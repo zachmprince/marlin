@@ -12,7 +12,10 @@ macroscopic fields as required by the implementation.
 
 ## Example Input File Syntax
 
-!listing test/tests/lbm/vertical_velocity_bcs.i block=TensorComputes/Boundary/top
-!listing test/tests/lbm/vertical_velocity_bcs.i block=TensorComputes/Boundary/bottom
+!listing lbm/vertical_velocity_bcs.i block=TensorComputes/Boundary/top TensorComputes/Boundary/bottom
+
+This boundary condition also allows for time-varying velocity:
+
+!listing lbm/ramped_velocity_bcs.i block=Functions TensorComputes/Boundary/left
 
 !syntax parameters /TensorComputes/Boundary/LBMFixedFirstOrderBC

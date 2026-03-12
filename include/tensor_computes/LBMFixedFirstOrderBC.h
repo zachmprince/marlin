@@ -10,10 +10,12 @@
 
 #include "LBMBoundaryCondition.h"
 
+#include "FunctionInterface.h"
+
 /**
  * LBMFixedFirstOrderBC object
  */
-class LBMFixedFirstOrderBC : public LBMBoundaryCondition
+class LBMFixedFirstOrderBC : public LBMBoundaryCondition, public FunctionInterface
 {
 public:
   static InputParameters validParams();
@@ -37,6 +39,10 @@ public:
 protected:
   const torch::Tensor & _f;
   torch::Tensor _f_owned;
-  const Real & _value;
+  const Real & _value_unscaled;
+  const Function & _function;
   const bool _perturb;
+
+private:
+  Real _value;
 };

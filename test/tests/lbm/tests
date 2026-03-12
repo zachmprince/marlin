@@ -360,4 +360,15 @@
     min_parallel = 1
     max_parallel = 4
   []
+
+  [ramped_inlet]
+    type = CSVDiff
+    input = ramped_velocity_bcs.i
+    csvdiff = ramped_velocity_bcs_out.csv
+    compute_devices = 'cpu cuda mps xpu'
+
+    requirement = 'The system shall support time-varying inlet boundary conditions.'
+    design = 'LBMFixedFirstOrderBC.md'
+    issues = '#148'
+  []
 []

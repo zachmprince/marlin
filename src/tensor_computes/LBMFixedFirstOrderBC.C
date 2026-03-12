@@ -10,6 +10,8 @@
 #include "LatticeBoltzmannProblem.h"
 #include "LatticeBoltzmannStencilBase.h"
 
+#include "Function.h"
+
 #include <cstdlib>
 
 using namespace torch::indexing;
@@ -23,14 +25,17 @@ LBMFixedFirstOrderBC::validParams()
   params.addClassDescription("LBMFixedFirstOrderBC object");
   params.addRequiredParam<TensorInputBufferName>("f", "Input buffer distribution function");
   params.addRequiredParam<std::string>("value", "Fixed input velocity");
+  params.addParam<FunctionName>("function", 1.0, "Time-varying function to scale 'value' with.");
   params.addParam<bool>("perturb", false, "Whether to perturb first order moment at the boundary");
   return params;
 }
 
 LBMFixedFirstOrderBC::LBMFixedFirstOrderBC(const InputParameters & parameters)
   : LBMBoundaryCondition(parameters),
+    FunctionInterface(this),
     _f(getInputBufferByName(getParam<TensorInputBufferName>("f"), _radius)),
-    _value(_lb_problem.getConstant<Real>(getParam<std::string>("value"))),
+    _value_unscaled(_lb_problem.getConstant<Real>(getParam<std::string>("value"))),
+    _function(getFunction("function")),
     _perturb(getParam<bool>("perturb"))
 {
 }
@@ -268,6 +273,8 @@ LBMFixedFirstOrderBC::topBoundary()
 void
 LBMFixedFirstOrderBC::computeBuffer()
 {
+  _value = _value_unscaled * _function.value((Real)_lb_problem.getTotalSteps() + 1, Point());
+
   _f_owned = _f;
   for (unsigned int d = 0; d < _dim; d++)
     _f_owned = _f_owned.narrow(d, _radius, _shape[d]);
